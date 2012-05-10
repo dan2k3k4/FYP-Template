@@ -1,0 +1,470 @@
+% Using report layout, although memoir may be better
+\documentclass[final,a4paper,11pt]{report}
+
+%% Fonts %%%
+\usepackage[T1]{fontenc}	% fontenc to tweak the font encoding
+\usepackage[scaled]{helvet}	% helvet for helvetica font
+\renewcommand*\familydefault{\sfdefault}	% ensure sans-serif mode is on
+\linespread{1.08}	% increase line spread
+
+%%% Packages %%%
+% You can just uncomment packages and use them if needed
+% \usepackage{epstopdf}	% epstopdf to convert eps images to pdf
+% \usepackage[pst-uml]{pstricks}	% for UML, though I preferred to use a program to get the images instead and insert those
+\usepackage[latin1]{inputenc}	% inputenc for encoding to latin1
+\usepackage[authoryear]{natbib}	% natbib used for reference style
+\usepackage{amsmath,amsfonts,amssymb}	% ams* for math equations
+\usepackage{graphicx}	% graphicx for figures
+
+\usepackage{calc}	% calc for calculations like minof
+\usepackage{setspace}	% setspace for line spacing
+\usepackage{multicol}	% multicol used for multiple columns
+\usepackage{listings}	% listings for source code
+\usepackage[chapter]{minted}	% minted for syntax colour highlighting
+\usepackage[noend]{algpseudocode}	% algpseudocode for pseudo code, noend to disable end showing up
+\usepackage[a4paper,left=2.5cm,top=1.2cm,bottom=1.2cm,right=1.2cm,includeheadfoot]{geometry} % geometry for how to lay out the page
+
+\usepackage{fancyhdr}	% fancyhdr for header
+\usepackage{lastpage}	% lastpage for page of LastPage in footer
+\usepackage[justification=centering,font=small,labelfont=bf]{caption} % caption for custom captions on tables and images
+\usepackage[hidelinks,breaklinks]{hyperref}	% hyperref for linking references for pdf
+\usepackage{nameref}	% nameref for chapter names as label refs
+\usepackage{varioref}	%	varioref creates vref commands that automatically references the name and position of the label
+\usepackage{chngcntr}	% chngcntr to change counter for tables and figures
+\usepackage{tocloft}	% tocloft for table of contents style
+\usepackage[nottoc]{tocbibind}	% tocbibind to list bibliography in ToC
+\usepackage[compact]{titlesec}	% titlesec for title section layout
+
+\usepackage{wrapfig}	% wrapfig to wrap text around figures
+\usepackage{subfig}	% subfig allow creation of sub figures
+\usepackage{mdwlist}	% mdwlist for compact enumeration/list items
+\usepackage{bigstrut}	% bigstrut for table
+\usepackage{booktabs}	% booktabs for table
+%\usepackage[usenames,dvipsnames]{color}	% color for adding aesthetic colour changes - fails when using minted
+\usepackage{soul}	% soul for adding and coloring highlighting, strikethrough and underline
+
+% Run texcount on tex-file and write results to a file - NOTE YOU WILL NEED TO ENSURE texcount IS INSTALLED AND SETUP
+\immediate\write18{texcount FYP-Template.tex -sum -1 > wordcount.sum} %%%%% NOTE YOU WILL ALSO NEED TO RENAME THE FYP-Template.tex if you change the .tex name of this document!
+% Define \wordcount for including the counts
+\newcommand{\wordcount}{\input{wordcount.sum}}
+
+% Define Brunel style colors
+\definecolor{brunel-blue}{RGB}{0,56,147}
+\definecolor{disc-purple}{RGB}{144,22,178}
+\definecolor{light-gray}{gray}{0.95}
+
+% Remove paragraph indent, I personally didn't like it but you might prefer to comment this out or increase 0pt
+\setlength{\parindent}{0pt}
+
+% Format the title for chapters
+\titleformat{\chapter}{\huge\bfseries\usefont{OT1}{phv}{b}{n}\color{brunel-blue}}{\llap{\thechapter\quad}}{0em}{}
+\titleformat{\section}{\Large\bfseries\usefont{OT1}{phv}{b}{n}\color{black}}{\llap{\thesection\quad}}{0em}{}
+\titleformat{\subsection}{\large\bfseries\usefont{OT1}{phv}{b}{n}\color{black}}{\llap{\thesubsection\quad}}{0em}{}
+\titleformat{\subsubsection}{\bfseries\usefont{OT1}{phv}{b}{n}\color{black}}{\llap{\thesubsubsection\quad}}{0em}{}
+
+% Setup spacing before ToC and Chapters
+\titlespacing*{\chapter}{0pt}{-1em}{1.1\parskip}
+\setlength{\cftbeforetoctitleskip}{-1em}
+
+% Setup ToC spacing and dots
+\renewcommand{\cftbeforechapskip}{3pt}
+\renewcommand{\cftdot}{\normalfont.}
+\renewcommand{\cftchapdotsep}{4.5}
+
+% All graphics located in either directory
+\graphicspath{{images/},{figures/}}
+
+% Rename items
+\renewcommand{\contentsname}{\huge\bfseries\usefont{OT1}{phv}{b}{n}\color{brunel-blue}Table of Contents}
+\renewcommand{\bibname}{References}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\listoflistingscaption}{\huge\bfseries\usefont{OT1}{phv}{b}{n}\color{brunel-blue}List of source code}
+\renewcommand{\listingscaption}{Source code}
+
+% For autoref to work for listing
+\providecommand*{\listingautorefname}{Source code}
+
+% Set-up mycode environment (so I can easily import code with \begin{mycode} and \end{mycode}
+\makeatletter
+\newenvironment{mycode}[3]
+ {\VerbatimEnvironment
+  \minted@resetoptions
+  \setkeys{minted@opt}{linenos,bgcolor=light-gray}
+  \renewcommand{\minted@proglang}[1]{#1}
+  \begin{listing}[H]
+    \centering
+    \caption{#2}
+    {#3}
+      \begin{VerbatimOut}{\jobname.pyg}}
+ {\end{VerbatimOut}
+  \minted@pygmentize{\minted@proglang{}}
+  \DeleteFile{\jobname.pyg}
+  \end{listing}
+  }
+\makeatother
+
+% Ensure TexCount ignores certain environments
+% DO NOT UNCOMMENT TC COMMENTS, THEY ARE COMMANDS FOR THE SCRIPT
+%TC:group mycode 0 -1
+%TC:group wrapfigure 0 -1
+%TC:group figure 0 -1
+%TC:group table 0 -1
+
+% Figures and tables within a column
+\makeatletter
+\newenvironment{table-col}
+{\def\@captype{table}}
+{}
+\newenvironment{figure-col}
+{\def\@captype{figure}}
+{}
+\makeatother
+
+% Allow for more floats and graphs per page
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
+
+% Setup for Tables and Figures counter layout
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\renewcommand{\cftfigpresnum}{Figure\ }
+\renewcommand{\cfttabpresnum}{Table\ }
+
+% Length for Tables and Figures
+\newlength{\mylenf}
+\settowidth{\mylenf}{\cftfigpresnum}
+\setlength{\cftfignumwidth}{\dimexpr\mylenf+1.5em}
+\setlength{\cfttabnumwidth}{\dimexpr\mylenf+1.5em}
+
+% Make list of tables and figures command
+\makeatletter
+\newcommand\listoftablesandfigures{
+    \chapter*{List of Tables and Figures}
+    \phantomsection
+\@starttoc{lot}
+\bigskip
+\@starttoc{lof}}
+\makeatother
+
+% Setup image width and scalegraphics to scale graphics to textwidth
+\newlength{\imgwidth}
+\newcommand\scalegraphics[2][]{
+    \settowidth{\imgwidth}{\includegraphics[scale=0.8]{#2}}
+    \setlength{\imgwidth}{\minof{#1\imgwidth}{\textwidth}}
+    \includegraphics[width=\imgwidth,keepaspectratio]{#2}
+}
+
+% Setup quoted environment so quotes are always italicised
+\newenvironment{quoted}
+	{\begin{quote}\itshape}
+	{\end{quote}}
+
+% Setup title, author and date for multiple use by just calling @title again or @author or @date
+\makeatletter
+\title{Investigating Some Cool Concept}	\let\Title\@title %%%%%%%%% NOTE CHANGE THIS TO YOUR ACTUAL TITLE
+\author{John Smith}	\let\Author\@author %%%%%%%%%%% NOTE CHANGE THIS TO YOUR ACTUAL NAME
+\date{\today}	\let\Date\@date
+\makeatother
+
+% Setup student ID command
+\newcommand{\StudentID}{012345} %%%%%%% NOTE CHANGE THIS TO YOUR STUDENT ID
+
+% For hyperref and the produced pdf
+\hypersetup{
+  pdftitle = {\Title},
+  pdfauthor = {\Author},
+  pdfcreator = {\Author},
+  pdfproducer = {\Author},
+  pdfkeywords = {CS3072} {Final Year Project} {Brunel University}
+}
+
+% Setup the header and footer
+\lhead{}
+\chead{\Title}
+\rhead{}
+\lfoot{\StudentID}
+\cfoot{}
+\rfoot{}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Redefining plain pagestyle
+\fancypagestyle{plain}{
+\thispagestyle{fancy}
+}
+
+% Adding other pagestyle
+\fancypagestyle{other}{
+\fancyhf{}
+\chead{\Title}
+\lfoot{\StudentID}
+}
+
+% Use fancy pagestyle for document
+\pagestyle{fancy}
+
+% Rule settings
+\hyphenpenalty=5000
+\tolerance=1000
+
+
+% Begin actual FYP document
+\begin{document}
+%TC:ignore
+
+% Custom titlepage to match actual title page for Brunel
+\begin{titlepage}
+\begin{center}
+\includegraphics[scale=0.75]{brunel_logo}\\[1cm]
+\textbf{
+\large{
+Department of Information Systems and Computing\\[0.5cm]
+BSc (Hons) Computer Science
+}\\[0.5cm]
+\normalsize Academic Year 2011-2012
+}\\[2.5cm]
+{\LARGE \Title}\\[0.75cm]
+
+\begin{tabular}{@{} l}\\
+{\Large \Author} \\[0.5cm]
+{\Large \StudentID}
+\end{tabular}
+
+\vfill
+\textsc{
+A report submitted in partial fulfilment of the requirement for the degree of \\
+Bachelor of Science
+}\\[1.5cm]
+\end{center}
+
+\begin{flushright}
+\small{
+Brunel University\\
+Department of Information Systems and Computing\\
+Uxbridge, Middlesex UB8 3PH\\
+United Kingdom\\
+Tel: +44 (0) 1895 203397\\
+Fax: +44 (0) 1895 251686\\
+}
+\end{flushright}
+\end{titlepage}
+
+\clearpage
+
+
+% Abstract
+
+\begin{abstract}
+\thispagestyle{other}
+Give a summary of your dissertation. Try to include the following:
+\begin{itemize}
+\item A high level description of the topic area 
+\item An overview of the problem studied and why this is interesting / relevant / important
+\item A high level description of the approach taken
+\item A summary of the contribution (what did you find/what was the outcome? What is the key implication of your work?)
+\end{itemize}
+If possible try not to exceed 500 words. You must \textbf{not} exceed this one page.
+
+
+\end{abstract}
+
+
+% Acknowledgements and signature
+\chapter*{Acknowledgements}
+\thispagestyle{other} % We don't need the footer/header/page-numbering until Chapter 1, so just keep this as other (custom)
+We can acknowledge people, supervisors, family, friends, even programs here if we want.
+\vspace{1.5cm}
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline
+\\[0.2cm]
+\hspace*{0.2cm} I certify that the work presented in the dissertation is my own unless referenced. \hspace*{0.2cm} \\[1.5cm]
+\makebox[2.5in]{Signature\hspace{0.5cm} \dotfill}\\
+\\[0.3cm]
+\makebox[2.5in]{Date\hspace{0.5cm} \dotfill}\\
+\\[0.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\vfill
+
+\textsc{\large TOTAL NUMBER OF WORDS: \textbf{\wordcount}}\\[5.0cm]
+
+
+
+% Table of contents
+\tableofcontents
+\addtocontents{toc}{\vskip-30pt}
+
+% Custom table of Tables and Figures
+\listoftablesandfigures
+
+% List of listings (i.e. source code)
+\listoflistings
+
+% For TexCount to get correct word count
+%TC:endignore
+
+% Set page numbering in arabic (as in 1, 2, 3)
+\pagenumbering{arabic}
+\rfoot{Page \thepage\ of \pageref{LastPage}}
+
+
+% Begin dissertation write up
+\onehalfspacing	% 1.5 line spacing
+\chapter{Introduction}\label{chap:introduction}
+\textit{Think about trying to set the scene for your report by giving an overview of your topic area and show how this fits into the broader area of Information Systems/Computer Science/Applied Computing/Network Computing. Give a brief overview of existing research and industry work in your topic (the full description will come in your literature review). Try to demonstrate that there is a gap in current knowledge or practice and use this to show why your own work is valuable. This should lead into a statement of the problem or research question that your report addresses.}
+
+
+\section{Aims and Objectives}
+\textit{State your intended aim and present your measurable objectives. The aim and objectives may be the original or a revised version of those found in your research proposal. Make sure that you have discussed and agreed any major changes in the aims and objectives with your supervisor.}
+
+\section{Research Approach}
+\textit{Give a brief overview of methods you used to achieve your intended aim and meet your individual measurable objectives.}
+
+\textit{Note that if you are involving human participants within your research, when reporting your research approach in more detail later in the report, you should include a brief summary of the measures taken to prevent contraventions of ethical guidelines.}
+ 
+
+\section{Dissertation Outline}
+The following describes how this report is organised.
+
+\subsection*{Chapter \ref{chap:literature} \nameref{chap:literature}}
+Background research...
+
+\subsection*{Chapter \ref{chap:implementation} \nameref{chap:implementation}}
+Implements some program...
+
+\subsection*{Chapter \ref{chap:testing} \nameref{chap:testing}}
+Does some testing...
+
+\subsection*{Chapter \ref{chap:conclusion} \nameref{chap:conclusion}}
+Summarises...
+
+
+\clearpage
+% Lit Review
+
+\chapter{Literature Review}\label{chap:literature}
+\section{Introduction}
+You'll need to complete a Literature Review, which should detail the background about why you are planning to do your project, comparison of other solutions that exist and definition of new concepts that may not be known to the reader. Ideally you should pretend the reader is a CS or IS student who has completed Level 2, so any concepts you plan to use should be highlighted and outlined in some detail.
+
+\section{Example Table}
+Here I'll just import a table by using the input command. It's better to use other .tex files to write your tables as they can become quite messy. I used an Excel2LaTeX (or Excel2Tex) script to make tables easily, though it does still require some tweaking for the size.
+
+\input{table_example.tex}
+
+\autoref{tab:example_1} shows a bunch of example rows and columns, note I used autoref because it is more readable when it shows Table rather than just the number.
+
+\section{Example Referencing}
+Here is how you can easily reference someone \citep{Smith2011}. \Citet{Goodmans2010} reported that everything worked really well and \citet{Johnson992} also agreed. Sometimes you might want to reference multiple things in the same quote as they all say the same thing \citep{LavinMera2008,Martin2007,RoyalSociety2010}.
+
+\section{Summary}
+The last section of each chapter (first and last chapters excluded) should be a brief summary of the chapter (1 paragraph) and a brief description of how it moves on to the next chapter (1 paragraph).
+
+
+Note I've not included all the various chapters that you might want to use. This is because you may have a very different outline/structure for your report and you should be more creative to write something that will interest the reader.
+
+
+\clearpage
+% Implementation
+
+\chapter{Implementation}\label{chap:implementation}
+\section{Introduction}
+This chapter details the development process...
+
+\section{How I did it all}
+Add sections and subsections to detail how you implemented your "program"
+
+\subsection{In detail}
+...and try to do it in as much detail as possible, answering all the possible "why did you do it this way" type of questions that you can think of.
+
+\section{Summary}
+\textit{The last section of each chapter (first and last chapters excluded) should be a brief summary of the chapter (1 paragraph) and a brief description of how it moves on to the next chapter (1 paragraph).}
+
+\clearpage
+% Testing
+
+\chapter{Testing and Evaluation}\label{chap:testing}
+\section{Introduction}
+Maybe you want to do some testing and evaluation, or you might want to include this chapter within the implementation chapter. If you're doing IC, you might not have much testing to do, where-as CS students may require a lot more testing.
+
+\section{Summary}
+This chapter has presented...
+
+\autoref{chap:conclusion} documents the conclusion of this project along with a personal reflection.
+
+\clearpage % I like to do /clearpage between chapters to ensure all images and floated stuff is put on the correct chapter
+%%%%%%%%%%%%
+% Concluding Discussion
+
+\chapter{Concluding Discussion}\label{chap:conclusion}
+\textit{This chapter gives a summary of the main points of the report, presents the contributions made and discusses possible future activity that evolves from the project.}
+
+\section{Summary of the dissertation}
+\textit{A chapter by chapter summary of main points of the report.}
+
+\section{Achievements}
+\textit{Presentation of the projects achievements. You should discuss their value and how they can be applied both academically and practically?}
+
+\section{Future research or development}
+\textit{How can your achievements be exploited further? By you or by a student next year or by the beneficiaries? What further research could be pursued from your dissertation and how? Note that no research or development is perfect and there will be limitations to your work. Discuss them here, but use them in a positive way by describing how future work could overcome these limitations.}
+
+\section{Personal Reflection}
+\textit{This is a requirement for BCS accreditation. Comment on your personal strengths and weakness' that you are aware of as a result of completing the Final Year Project module. Where weaknesses are identified, comment on what steps you might take in the future to overcome them.}
+
+\subsection{Knowledge Gained}
+I lost braincells drinking and haven't really gained any knowledge, I'm just writing a long sentence to ensure it takes up some room on this example report. I would highly recommend taking a long nap right about now.
+
+\clearpage
+
+% TC is for TexCount to ignore the 'words' for the 'wordcount' script
+%TC:ignore
+
+%%%%%%%%%%%
+% References
+
+% For this you must use the Harvard Referencing system (examples of the Harvard system are offered below). Starting at the top of a new page, provide an alphabetical list, ordered by first author surname, of ALL references you cite in the text of this report
+
+\bibliographystyle{agsm} % AGSM style matches closely to Brunel style
+\bibliography{biblio}
+
+%%%%%%%%%%%
+% Appendix
+\appendix
+
+% Add appendices as necessary to provide relevant evidence to support the activities and conclusions described in the report. The following are examples of what might be included as appendices.
+
+\chapter{Primary Data Collection Methods}\label{appendix:data_collection}
+This research uses two methods for primary data collection: a questionnaire and semi-structured interviews.
+
+\section{Questionnaire}
+You know the actual survey that you might have performed.
+
+\section{Semi-structured interviews}
+Some text or insert interview transcripts here.
+
+\chapter{Just a sample}\label{appendix:sample}
+Just a sample with some sections
+
+\section{Cool Report}
+Seriously, way cool man.
+
+\section{Awesome}
+Definite A grade, right?
+
+
+\chapter{Source Code}
+This is where you 'dump' any source code (not in any the chapters).
+
+
+% TC is for TexCount to ignore the 'words' for the 'wordcount' script
+%TC:endignore
+
+\end{document}

@@ -1,0 +1,48 @@
+% Table Example with 4 columns
+% First column is 'right-aligned' and has no width
+% Columns 2-4 are set with width of 4cm
+\begin{table}[h]
+  \centering
+    \begin{tabular}{r | p{4cm} p{4cm} p{4cm} }
+    \toprule
+     & % We have empty first 0,0 cell (just as example)
+      \multicolumn{1}{c}{\textbf{Col-heading 1}} &
+      \multicolumn{1}{c}{\textbf{Col-heading 2}} &
+      \multicolumn{1}{c}{\textbf{Col-heading 3}}
+      \\
+    \midrule
+    Row 1 &
+      Row 1 Col 1 &
+      Row 1 Col 2 &
+      Row 1 Col 3
+      \\
+    Price &
+      Free &
+      Free &
+      Free
+      \\
+    Language &
+      Java &
+      C++ &
+      Python
+      \\
+    Scripting &
+      None &
+      Lua &
+      Lua, JavaScript
+      \\
+    Skill &
+      Intermediate &
+      Intermediate &
+      Intermediate
+      \\
+    Activity &
+      Highly Active &
+      Not Active &
+      Medium Active
+      \\
+    \bottomrule
+    \end{tabular}
+  \caption{An example caption for the table, also shows up in Table of Contents}
+  \label{tab:example_1}
+\end{table}
