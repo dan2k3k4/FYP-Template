@@ -44,7 +44,8 @@ Compiling
 TeX requires the code to be compiled multiple times to fix all cross referencing issues and other things, this is partly due to the way the TeX engine was structured and built.
 
 My compile script, of which I simply used in the `Quick Build` option in TeXMaker:
-	pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|bibtex %|pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|"C:/Program Files (x86)/Adobe/Reader 10.0/Reader/AcroRd32.exe" %.pdf
+
+> pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|bibtex %|pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|pdflatex -shell-escape -synctex=1 -interaction=nonstopmode %.tex|"C:/Program Files (x86)/Adobe/Reader 10.0/Reader/AcroRd32.exe" %.pdf
 
 An automatic perl script exists to ensure the correct number of compilations to resolve cross references etc. through the use of [latexmk](http://www.phys.psu.edu/~collins/software/latexmk-jcc/). I haven't personally used it, but you might find it useful.
 
